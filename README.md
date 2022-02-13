@@ -1,5 +1,5 @@
 # 60Hz
-Measure and record 60 Hz power line frequency using GPS 1 ops as a reference
+Measure and record 60 Hz power line frequency using GPS 1 pps as a reference
 Use an Arduono Teensy to accurately measure the 60 Hz using 1 pps interrupts from a GPS and 60 Hz interrupts from an AC transformer (which also powers the system.
 A Raspberry Pi Zero W running Python reads the serial data stream from the Teensy every 5 s and appends it to a log file; it also outputs to a terminal.
 
