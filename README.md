@@ -3,7 +3,32 @@ Measure and record 60 Hz power line frequency using GPS 1 pps as a reference.
 Use an Arduino Teensy to accurately measure the 60 Hz using 1 pps interrupts from a GPS and 60 Hz interrupts from an AC transformer (which also powers the system).
 A Raspberry Pi Zero W running Python reads the serial data stream from the Teensy every 5 s and appends it to a log file; it also outputs to a terminal.
 
-The R Pi uses systemd to mount a network redcorder drive, and to start the 60Hz service.
+A 9 VAC 300 mA transformer powers the system. The transformed powers a bridge rectifier, filter capacitor and simple DCDC converter to deliver 5 V to the Raspberry Pi and the Teensy. Thje PCB link between the USB and 5 V pin on the Teensy is cut to allow the Tensy to be programmed via USB even while the system is powered.
+
+A 2-stage R.C filter with a 3.3V zener clamp is driven from one AC terminal of the transformer. The other is connected to DC GND via 1 kohm. This is important as while the AC waveform is less than the bridge rectifier output, the common-mode level of the transformer is undefined. The resultant signal (looks like a smoothed half-wave rectified signal) drives the comparator in the Teensy which squares it up (with hysteresis) and drives the Teensy's FTM (Flex Timer) module interrupts. These are counted against the Teensy's internal 48 MHz crystal.
+
+eEparately, a precise 1 pulse-per-second (pps) signal from the GPS (about 20 ns jitter) also drives interrupts to another FTM channel. These 1 Hz interrupts calibrate the 48 MHz clock to give a precsise timebase. A slow filter ( 16 s time constant) filters this. If the 1 pps is lost, the last good calibration is used until the 1 pps is restored. 
+
+The Teensy outputs serial ASCII data on USB and its serial port. Each line contains the number of 48 MHz clocks, number of power line cycles, calculated 60Hz frequency, calibrated 48 MHz, cumulated cycles, filter and 6 0Hz phase information in response to a 'request' (a single newline character). If the 'request' contains any additional character, the Teensy outputs a header and resets the cumulative counter.
+
+The Teensy's serial port is connected to the Raspberry Pi. A small Python program sends a request every 5 s (based on the Raspberry Pi's clock), and logs the time, Teensy's output and a simple ASCII plot to the terminal. Data is also appended to a (networked) log file.
+
+The Pi's clock is only used to timestamp the data; the precision of 60 Hz measurement comes from the 1 pps GPS signal. Care is taken in the interrupt and processing routines that NO 60 Hz cycles are lost. This can result in some 5 s intervals containing 299, 300 or 301 cycles. Irrespectively, the 60 Hz calculation is correct over that precise number of cycles.
+
+The initial Teensy output looks like this:
+2022-02-12 21:01:50.072 #
+2022-02-12 21:01:50.072 #    Ticks, Cycles,    Frequency,      FBUS, Total Cyc, Flt, Phase, 1Hz
+2022-02-12 21:01:50.151    4002125,      5, 59.966893838,  47999001,         5,  16,   122, 118
+2022-02-12 21:01:55.005  232924802,    291, 59.966602440,  47999000,       296,  16,    62,  10
+2022-02-12 21:02:00.005  240125542,    300, 59.967381562,  47999000,       596,  16,     3,  12
+2022-02-12 21:02:05.005  240109872,    300, 59.971295141,  47999000,       896,  16,   311,  14
+2022-02-12 21:02:10.005  239281816,    299, 59.978235036,  47999000,      1195,  16,   272,   3
+2022-02-12 21:02:15.005  240051332,    300, 59.985921261,  47999001,      1495,  16,   247,   4
+2022-02-12 21:02:20.005  240035730,    300, 59.989820266,  47999001,      1795,  16,   228,   5
+
+
+
+The R Pi uses systemd to mount a network recorder drive, and to start the 60Hz service.
 
 
 Here's an example of the data:
