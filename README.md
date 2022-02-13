@@ -12,12 +12,12 @@ Separately, a precise 1 pulse-per-second (pps) signal from the GPS (about 20 ns 
 
 The Teensy outputs serial ASCII data on USB and its serial port. Each line contains the number of 48 MHz clocks, number of power line cycles, calculated 60Hz frequency, calibrated 48 MHz, cumulated cycles, filter and 60 Hz phase information in response to a 'request' (a single blank line). If the 'request' contains any additional character, the Teensy outputs a header and resets the cumulative counter.
 
-The Teensy's serial port is connected to the Raspberry Pi. A small Python program sends a request every 5 s (based on the Raspberry Pi's clock), and logs the time, Teensy's output and a simple ASCII plot to the terminal. Data is also appended to a (networked) log file.
+The Teensy's serial port is connected to the Raspberry Pi. A small Python program sends a request every 5 s (based on the Raspberry Pi's clock), and logs the time, Teensy's output and a simple ASCII plot to the terminal. Data is also appended to a (networked) log file. This program logs continuously in the background as a service; it can be monitored by logging in to the Pi and using TMUX to attach.
 
 The Pi's clock is only used to timestamp the data; the precision of 60 Hz measurement comes from the 1 pps GPS signal. Care is taken in the interrupt and processing routines that NO 60 Hz cycles are lost. This can result in some 5 s intervals containing 299, 300 or 301 cycles. Irrespectively, the 60 Hz calculation is correct over that precise number of cycles.
 
 
-The initial Teensy output looks like this:
+The initial Python log output looks like this:
 2022-02-12 21:01:50.072 #
 2022-02-12 21:01:50.072 #    Ticks, Cycles,    Frequency,      FBUS, Total Cyc, Flt, Phase, 1Hz
 2022-02-12 21:01:50.151    4002125,      5, 59.966893838,  47999001,         5,  16,   122, 118
@@ -33,7 +33,7 @@ The first few measurements are not over 5 s as the Python program synchs to 5 s 
 The R Pi uses systemd to mount a network recorder drive, and to start the 60Hz service. TMUX on the Pi doesn't work with a simple systemd service, so is wrapper in a shell script.
 
 
-Here's an example of the data also showing the plot:
+Here's an example of the terminal data also showing the plot (the plot itself is not logged)
 This correlates precisely with University of Tennessee's FNET service at http://fnetpublic.utk.edu/tabledisplay.html#WECC 
 
 2022-02-12 22:03:55.005  239995033,    300, 59.999993000,  47999001,    223465,  16,   169,   7, -·························/·························+
