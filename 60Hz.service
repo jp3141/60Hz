@@ -1,0 +1,16 @@
+[Unit]
+Description=Start 60 Hz monitor
+After=multi-user.target
+
+[Service]
+ExecStart=/home/pi/60Hz/60Hz.sh
+WorkingDirectory=/home/pi/60Hz
+#StandardOutput=inherit
+#StandardError=inherit
+Restart=always
+User=pi
+RemainAfterExit=true
+#Type=forking
+
+[Install]
+WantedBy=multi-user.target
