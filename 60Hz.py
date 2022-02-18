@@ -41,7 +41,7 @@ TeensyFreq.reset_output_buffer()
 
 # This is the header. includes a leading \n
 TeensyFreq.write(b' \n')  # write a space to make Teensy initialize
-TimeStamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+TimeStamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + ","
 TeensyFreq.readline() # This is a blank line
 
 F0 = 60.0
@@ -73,7 +73,7 @@ while True:
   LineNum += 1
 
   TeensyFreq.write(b'\n')
-  TimeStamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+  TimeStamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + ","
 
   FreqString=TeensyFreq.readline().decode("ascii", errors = "replace")[:-1]
 #  print(TimeStamp, FreqString)
