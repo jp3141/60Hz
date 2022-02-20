@@ -46,6 +46,7 @@ volatile int32_t Overflow_1Hz_Counter = 0;
 
 elapsedMicros PhaseMicros;
 volatile uint32_t Phase;
+volatile uint32_t PhaseMicrosARM, PhaseMicrosARM0=0; // From internal counter; not really microseconds. 
 
 
 void setup() {
@@ -63,6 +64,9 @@ void setup() {
   delay(200);
 
   ComparatorSetup(32); // about 1.5 V
+  
+  ARM_DEMCR |= ARM_DEMCR_TRCENA;
+  ARM_DWT_CTRL |= ARM_DWT_CTRL_CYCCNTENA;
 
 
   // The order of setting the TPMx_SC, TPMx_CNT, and TPMx_MOD
@@ -237,6 +241,8 @@ FASTRUN void ftm0_isr(void) { // 60 Hz
     start_C5V_60Hz = C5V_60Hz;
     Overflow_60Hz_Counter = 0;
     PhaseMicros = 0;
+    PhaseMicrosARM0 = ARM_DWT_CYCCNT;
+
     // now Cycles60Hz and Ticks60Hz are consistent. 
     // overflows can still accumulate
 
@@ -289,6 +295,7 @@ FASTRUN void ftm1_isr(void) { // 1 Hz; updates F_BUS_Cal with # FBUS cycles per 
     }
     start_C0V_1Hz = C0V_1Hz; // save for next 1 Hz pulse
     Phase = PhaseMicros * 360 * Target_Hz / 1000000;
+    Phase = (ARM_DWT_CYCCNT-PhaseMicrosARM0) * 360LL * Target_Hz / F_BUS; // final result is 0..359; intermediate could be 64 bit (48M*360), so LL forces 64 bit
     Overflow_1Hz_Counter = 0;
 
 
