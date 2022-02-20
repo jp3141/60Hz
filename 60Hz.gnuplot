@@ -17,7 +17,7 @@ set clip one
 unset clip two
 unset clip radial
 set errorbars front 1.000000 
-set border 31 front lt black linewidth 1.000 dashtype solid
+set border 31 front lt black linewidth 2.000 dashtype solid
 set zdata 
 set ydata 
 set xdata time
@@ -30,7 +30,7 @@ set style rectangle back fc  bgnd fillstyle   solid 1.00 border lt -1
 set style circle radius graph 0.02 
 set style ellipse size graph 0.05, 0.03 angle 0 units xy
 set dummy x, y
-set format x "%b %d\n%H:%M" timedate
+set format x "%Hh %a\n%b %d" timedate
 set format y "%5.2f" 
 set format x2 "% h" 
 set format y2 "%3.1f" 
@@ -41,7 +41,10 @@ set ttics format "% h"
 set timefmt "%Y-%m-%d %H:%M:%S"
 set angles radians
 set tics back
-unset grid
+set grid nopolar
+set grid xtics nomxtics noytics nomytics noztics nomztics nortics nomrtics \
+ nox2tics nomx2tics noy2tics nomy2tics nocbtics nomcbtics
+set grid layerdefault   lt 0 linecolor rgb "dark-violet"  linewidth 1.000 dashtype solid,  lt 0 linecolor rgb "dark-violet"  linewidth 1.000 dashtype solid
 unset raxis
 set theta counterclockwise right
 set style parallel front  lt black linewidth 2.000 dashtype solid
@@ -98,29 +101,29 @@ unset y2zeroaxis
 set xyplane relative 0.5
 set tics scale  1, 0.5, 1, 1, 1
 set mxtics default
-set mytics default
+set mytics 2.000000
 set mztics default
 set mx2tics default
 set my2tics default
 set mcbtics default
 set mrtics default
 set nomttics
-set xtics border in scale 1,0.5 mirror norotate  autojustify
+set xtics border in scale 3,1.5 mirror norotate  autojustify
 set xtics  norangelimit autofreq 
-set ytics border in scale 1,0.5 mirror norotate  autojustify
+set ytics border in scale 3,1.5 nomirror norotate  autojustify
 set ytics  norangelimit autofreq 
-set ztics border in scale 1,0.5 nomirror norotate  autojustify
+set ztics border in scale 3,1.5 nomirror norotate  autojustify
 set ztics  norangelimit autofreq 
 unset x2tics
-set y2tics border in scale 1,0.5 nomirror norotate  autojustify
+set y2tics border in scale 3,1.5 nomirror norotate  autojustify
 set y2tics  norangelimit autofreq 
-set cbtics border in scale 1,0.5 mirror norotate  autojustify
+set cbtics border in scale 3,1.5 mirror norotate  autojustify
 set cbtics  norangelimit autofreq 
-set rtics axis in scale 1,0.5 nomirror norotate  autojustify
+set rtics axis in scale 3,1.5 nomirror norotate  autojustify
 set rtics  norangelimit autofreq 
 unset ttics
-set title "" 
-set title  font "" textcolor lt -1 norotate
+set title "60 Hz Monitoring" 
+set title  font "Arial,16" textcolor lt -1 norotate
 set timestamp bottom 
 set timestamp "" 
 set timestamp  font "" textcolor lt -1 norotate
@@ -176,5 +179,5 @@ VoxelDistance = 9.00500479207635e-308
 F60 = "/Volumes/John/60Hz.log"
 x = 0.0
 ## Last datafile plotted: "/Volumes/John/60Hz.log"
-plot F60 using 1:4 every ::3 with lines lw 1 lc "#0040FF40" title "Frequency", 60 with lines lw 3 lc "black" title "", F60  using 1:($2/$5*($4-60)/60) every ::3 smooth cumulative axes x1y2 title "Drift" lw 2 lc "blue"
+pl F60 us 1:4 w li lw 1 lc "#f89441" ti "Frequency", 60 w li lw 2 lc "black" ti "", F60  us 1:($3/60-$2/$5) sm cumu axes x1y2 title "Drift" lw 2 lc "blue"
 #    EOF
