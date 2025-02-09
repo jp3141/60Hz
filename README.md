@@ -4,7 +4,7 @@ Measure and record 60 Hz power line frequency using GPS 1 pps as a reference.
 Use an Arduino Teensy to accurately measure the 60 Hz AC powerline frequency using 1 pps calibration from a GPS and 60 Hz interrupts from an AC transformer (which also powers the system).
 A Raspberry Pi Zero W running Python reads the serial data stream from the Teensy every 5 s and appends it to a log file; it also outputs to a terminal.
 
-A 9 VAC 300 mA transformer powers the system. The transformer powers a bridge rectifier, filter capacitor and simple DCDC converter to deliver 5 V to the Raspberry Pi and the Teensy. Thje PCB link between the USB and 5 V pin on the Teensy is cut to allow the Teensy to be programmed via USB even while the system is powered.
+A 9 VAC 300 mA transformer powers the system. The transformer powers a bridge rectifier, filter capacitor and simple DCDC converter to deliver 5 V to the Raspberry Pi and the Teensy. The PCB link between the USB and 5 V pin on the Teensy is cut to allow the Teensy to be programmed via USB even while the system is powered.
 
 A 2-stage R.C filter with a 3.3V zener clamp is driven from one AC terminal of the transformer. The other is connected to DC GND via 1 kohm. This is important as while the AC waveform is less than the bridge rectifier output, the common-mode level of the transformer is undefined. The resultant signal (looks like a smoothed half-wave rectified signal) drives the comparator in the Teensy which squares it up (with hysteresis) and drives the Teensy's FTM (Flex Timer) module interrupts. These are counted against the Teensy's internal 48 MHz crystal.
 
